@@ -3,5 +3,6 @@
            :author "Franck YVONNET"
            :serial t
            :depends-on (:aoc-coord
-                        :aoc-misc)
+                        :aoc-misc
+                        :trivia)
            :components ((:file "day01")))
