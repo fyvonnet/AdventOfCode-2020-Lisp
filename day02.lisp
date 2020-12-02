@@ -15,11 +15,9 @@
           :password (aref matches 3))))
 
 (defun count-valid (predicate lst)
-  (if (null lst)
-    0
-    (+
-      (if (funcall predicate (first lst)) 1 0)
-      (count-valid predicate (rest lst)))))
+  (reduce 
+    (lambda (c e) (if (funcall predicate e) (1+ c) c))
+    lst :initial-value 0))
 
 (defun policy-1 (record)
   (let
