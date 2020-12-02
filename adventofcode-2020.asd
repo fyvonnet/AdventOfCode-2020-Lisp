@@ -4,5 +4,7 @@
            :serial t
            :depends-on (:aoc-coord
                         :aoc-misc
+                        :cl-ppcre
                         :trivia)
-           :components ((:file "day01")))
+           :components ((:file "day01")
+                        (:file "day02")))
