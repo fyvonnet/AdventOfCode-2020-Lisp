@@ -14,11 +14,6 @@
           :letter (coerce (aref matches 2) 'character)
           :password (aref matches 3))))
 
-(defun count-valid (predicate lst)
-  (reduce 
-    (lambda (c e) (if (funcall predicate e) (1+ c) c))
-    lst :initial-value 0))
-
 (defun policy-1 (record)
   (let
     ((valid-letters
