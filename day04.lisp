@@ -16,27 +16,27 @@
              ((list field value) (with m field value))))
       lst :initial-value (empty-map)))
 
-(defun concat-lines (lst &optional str)
+(defun make-passports (lst &optional str)
   (cond
-    ((null lst) (cons str nil))
-    ((zerop (length (first lst))) (cons str (concat-lines (rest lst))))
-    (t (concat-lines
+    ((and (null lst) (null str)) nil)
+    ((zerop (length (first lst)))
+     (cons
+       (make-map (split "\\s" str))
+       (make-passports (rest lst))))
+    (t (make-passports
          (rest lst)
          (if (null str)
            (first lst)
            (concatenate 'string str " " (first lst)))))))
 
-(defun check-valid (passport)
+(defun all-fields (passport)
   (reduce
-    (lambda (b f) (and b (not (null (lookup passport f)))))
+    (lambda (b f) (and b (lookup passport f)))
     '("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid")
     :initial-value t))
 
 (defun main ()
   (let*
-    ((input (read-input-as-list 4))
-     (maps (mapcar (lambda (s) (make-map (split "\\s" s))) (concat-lines input))))
-    ;(print maps)
-    ;(print (length input))
-    ;(print (length maps))
-    (print (count-valid #'check-valid maps))))
+    ((passports (make-passports (read-input-as-list 4)))
+     (valid-passports (remove-if-not #'all-fields passports)))
+    (print (length valid-passports))))
