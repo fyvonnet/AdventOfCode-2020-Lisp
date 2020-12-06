@@ -9,25 +9,12 @@
 (in-package :day04)
 
 
-(defun make-map (lst)
+(defun make-map (str)
   (reduce
     (lambda (m r)
-      (match (split ":" r)
-             ((list field value) (with m field value))))
-      lst :initial-value (empty-map)))
-
-(defun make-passports (lst &optional str)
-  (cond
-    ((and (null lst) (null str)) nil)
-    ((zerop (length (first lst)))
-     (cons
-       (make-map (split "\\s" str))
-       (make-passports (rest lst))))
-    (t (make-passports
-         (rest lst)
-         (if (null str)
-           (first lst)
-           (concatenate 'string str " " (first lst)))))))
+      (match (split ":" r) ((list field value) (with m field value))))
+    (split "\\s" str)
+    :initial-value (empty-map)))
 
 (defun all-fields (passport)
   (reduce
@@ -60,7 +47,7 @@
 
 (defun main ()
   (let*
-    ((passports (make-passports (read-input-as-list 4)))
+    ((passports (mapcar #'make-map (read-broken-lines 4 t)))
      (valid-passports (remove-if-not #'all-fields passports)))
     (print (length valid-passports))
     (print (count-valid #'fully-valid valid-passports))))
