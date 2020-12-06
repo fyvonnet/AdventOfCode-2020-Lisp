@@ -22,12 +22,10 @@
   (size (less (make-chars-set str) #\Space)))
 
 (defun count-questions-2 (str)
-  (let
-    ((strs (split "\\s" str)))
-    (size
-      (reduce
-        #'fset:intersection
-        (mapcar #'make-chars-set strs)))))
+  (size
+    (reduce
+      #'fset:intersection
+      (mapcar #'make-chars-set (split "\\s" str)))))
 
 (defun main ()
   (let
