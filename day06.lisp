@@ -1,5 +1,5 @@
 (defpackage :day06
-  (:use :cl :aoc-misc)
+  (:use :cl :aoc-misc :cl-ppcre)
   (:export main)
   (:import-from :fset
                 :empty-set
@@ -10,27 +10,27 @@
 (in-package :day06)
 
 
-(defun concatenate-lines (lst space? &optional str)
-  (cond
-    ((and (null lst) (null str)) nil)
-    ((zerop (length (first lst))) (cons str (concatenate-lines (rest lst) space?)))
-    (t
-      (concatenate-lines
-        (rest lst)
-        space?
-        (if (null str)
-          (first lst)
-          (concatenate 'string str (when space? " ") (first lst)))))))
-
-(defun count-questions (str)
+(defun make-chars-set (str)
   (labels
     ((rec (lst set)
           (if (null lst)
-            (size (less set #\Space))
-            (rec (rest lst) (with set (car lst))))))
+            set
+            (rec (rest lst) (with set (first lst))))))
     (rec (coerce str 'list) (empty-set))))
+
+(defun count-questions (str)
+  (size (less (make-chars-set str) #\Space)))
+
+(defun count-questions-2 (str)
+  (let
+    ((strs (split "\\s" str)))
+    (size
+      (reduce
+        #'fset:intersection
+        (mapcar #'make-chars-set strs)))))
 
 (defun main ()
   (let
-    ((input (concatenate-lines (read-input-as-list 06) t)))
-    (print (reduce #'+ (mapcar #'count-questions input)))))
+    ((input (read-broken-lines 6 t)))
+    (dolist (func (list #'count-questions #'count-questions-2))
+      (print (reduce #'+ (mapcar func input))))))
