@@ -11,12 +11,13 @@
 
 
 (defun make-chars-set (str)
-  (labels
-    ((rec (lst set)
-          (if (null lst)
-            set
-            (rec (rest lst) (with set (first lst))))))
-    (rec (coerce str 'list) (empty-set))))
+  (let ((len (length str)))
+    (labels
+      ((rec (i set)
+            (if (= i len)
+              set
+              (rec (1+ i) (with set (aref str i))))))
+      (rec 0 (empty-set)))))
 
 (defun count-questions (str)
   (size (less (make-chars-set str) #\Space)))
