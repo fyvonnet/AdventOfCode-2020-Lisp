@@ -28,11 +28,14 @@
     (cdr rule)
     :initial-value graph))
 
-(defun make-graph (rules)
-  (reduce
-    #'add-rule
-    rules
-    :initial-value (empty-map)))
+(defun add-rule-2 (graph rule)
+  (reduce 
+    (lambda (g r) (with g (car rule) (cons r (lookup g (car rule)))))
+    (cdr rule)
+    :initial-value graph))
+
+(defun make-graph (func rules)
+  (reduce func rules :initial-value (empty-map)))
 
 (defun count-bags (graph queue set)
   (let ((color (queue-head queue)))
@@ -46,11 +49,28 @@
           :initial-value (queue-tail queue))
         (with set color)))))
 
+(defun count-bags-2 (graph queue)
+  (match (queue-head queue)
+         (nil -1)
+         ((cons n color)
+          (+ n (count-bags-2
+                 graph
+                 (reduce 
+                   (lambda (q e) (queue-snoc q (cons (* n (car e)) (cdr e))))
+                   (lookup graph color)
+                   :initial-value (queue-tail queue)))))))
+
 (defun main ()
   (let
     ((rules (remove-if-not #'second (read-input-as-list 7 #'decode-rule))))
+    ;((rules (remove-if-not #'second (read-input-as-list 7 #'decode-rule "test"))))
     (print 
       (count-bags
-        (make-graph rules)
+        (make-graph #'add-rule rules)
         (queue-snoc (empty-queue) "shiny gold")
-        (empty-set)))))
+        (empty-set)))
+    (print 
+      (count-bags-2
+        (make-graph #'add-rule-2 rules)
+        (queue-snoc (empty-queue) (cons 1 "shiny gold"))
+        ))))
