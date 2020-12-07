@@ -11,11 +11,10 @@
 
 
 (defun make-chars-set (str)
-  (loop
-    with set = (empty-set)
-    for c across str
-    do (setf set (with set c))
-    finally (return set)))
+  (reduce 
+    #'with
+    (coerce str 'list)
+    :initial-value (empty-set)))
 
 (defun count-questions (str)
   (size (less (make-chars-set str) #\Space)))
