@@ -1,10 +1,6 @@
 (defpackage :day09
   (:use :cl :aoc-misc :trivia)
-  (:export main)
-  (:import-from :fset
-                :empty-set
-                :contains?
-                :with))
+  (:export main))
 
 (in-package :day09)
 
