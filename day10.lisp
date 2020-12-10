@@ -1,37 +1,38 @@
 (defpackage :day10
   (:use :cl :aoc-misc :trivia)
-  (:export main))
+  (:export main)
+  (:import-from :fset
+                :empty-map
+                :lookup
+                :with))
 
 (in-package :day10)
 
 
-(defun count-diffs (lst)
-  (apply #'*
-         (reduce
-           (lambda (c x)
-             (case x
-               (1 (list (car c) (1+ (cadr c))))
-               (3 (list (1+ (car c)) (cadr c)))
-               (otherwise c)))
-           lst :initial-value '(0 0))))
+(defun chain-adapters (graph end-node)
+  (let ((count1 0) (count3 0))
+  (labels
+    ((rec (node)
+          (if (= node end-node)
+            (* count1 count3)
+            (let ((next-node (car (lookup graph node))))
+              (case (- next-node node) (1 (incf count1)) (3 (incf count3)))
+              (rec next-node)))))
+    (rec 0))))
 
-(defun chain-adapters (j adapters &optional diffs)
-  (if (null adapters)
-    diffs
-    (labels
-      ((rec (as)
-            (when as
-              (match (chain-adapters
-                       (car as)
-                       (remove (car as) adapters :count 1)
-                       (cons (- (car as) j) diffs))
-                     (nil (rec (cdr as)))
-                     (x x)))))
-      (rec
-        (sort (remove-if (lambda (r) (> (- r j) 3)) adapters) #'<)))))
+(defun make-graph (lst)
+  (if (null lst)
+    (empty-map)
+    (with
+      (make-graph (cdr lst))
+      (car lst)
+      (remove-if (lambda (r) (> (- r (car lst)) 3)) (cdr lst)) )))
 
 (defun main ()
   (let*
-    ((adapters (read-input-as-list 10 #'parse-integer))
-     (built-in (+ 3 (reduce #'max adapters))))
-    (print (count-diffs (chain-adapters 0 (cons built-in adapters))))))
+    ((input (read-input-as-list 10 #'parse-integer))
+     (built-in (+ 3 (reduce #'max input)))
+     (adapters (cons built-in input))
+     (graph (make-graph (sort (cons 0 adapters) #'<))))
+    (print (chain-adapters graph built-in))))
+
