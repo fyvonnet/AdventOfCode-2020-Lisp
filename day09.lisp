@@ -12,9 +12,6 @@
     (values (reverse lst2) lst)
     (split-at (1- n) (cdr lst) (cons (car lst) lst2))))
 
-(defun snoc (lst elm)
-  (append lst (list elm)))
-
 (defun make-sums (preamble)
   (match preamble
          ((list _) nil)
