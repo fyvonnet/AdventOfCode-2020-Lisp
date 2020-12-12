@@ -38,34 +38,38 @@
     with height = (array-dimension layout 0)
     with width  = (array-dimension layout 1)
     with new-layout = (make-array (list height width))
-    with has-changed = t
-    while has-changed
-    do (setf has-changed nil)
+    with has-changed = nil
+    for y below height
     do (loop
-         for y below height
-         do (loop
-              for x below width
-              do (let
-                   ((coord (make-coord x y)))
-                   (coord-array-set
-                     new-layout coord
-                     (case (coord-array-get layout coord)
-                       (#\L (if (zerop (funcall func layout coord)) (progn (setf has-changed t) #\#) #\L))
-                       (#\# (if (>= (funcall func layout coord) max-occ) (progn (setf has-changed t) #\L) #\#))
-                       (#\. #\.)))))
-         finally (setf layout (copy-array new-layout)))
-    finally (return 
-              (loop with count = 0
-                    for y below (array-dimension new-layout 0)
-                    do (loop for x below (array-dimension new-layout 1)
-                             for c = (coord-array-get new-layout (make-coord x y))
-                             do (when (and c (char= #\# c)) (incf count)))
-                    finally (return count)))))
+         for x below width
+         do (let
+              ((coord (make-coord x y)))
+              (coord-array-set
+                new-layout coord
+                (case (coord-array-get layout coord)
+                  (#\L (if (zerop (funcall func layout coord)) (progn (setf has-changed t) #\#) #\L))
+                  (#\# (if (>= (funcall func layout coord) max-occ) (progn (setf has-changed t) #\L) #\#))
+                  (#\. #\.)))))
+    finally (return (values has-changed new-layout))))
+
+(defun count-all-occupied (layout)
+  (loop with count = 0
+        for y below (array-dimension layout 0)
+        do (loop for x below (array-dimension layout 1)
+                 for c = (coord-array-get layout (make-coord x y))
+                 do (when (and c (char= #\# c)) (incf count)))
+        finally (return count)))
+
+(defun get-final-layout (layout func max-occ)
+  (multiple-value-bind (has-changed new-layout) (update-layout layout func max-occ)
+    (if has-changed
+      (get-final-layout new-layout func max-occ)
+      (count-all-occupied layout))))
 
 
 (defun main ()
   (let*
     ((layout (read-input-as-array 11 #'identity "test")))
-    (print (update-layout layout #'occupied-adjacent 4))
-    (print (update-layout layout #'occupied-visible  5))))
+    (print (get-final-layout layout #'occupied-adjacent 4))
+    (print (get-final-layout layout #'occupied-visible  5))))
 
