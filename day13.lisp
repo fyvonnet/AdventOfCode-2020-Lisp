@@ -4,9 +4,6 @@
 
 (in-package :day13)
 
-(defun min-second (a b)
-  (if (< (second a) (second b)) a b))
-
 (defun main ()
   (let*
     ((input (read-input-as-list 13))
