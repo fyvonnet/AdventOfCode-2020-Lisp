@@ -17,12 +17,14 @@
       (1+ turn)
       (with seq (car numbers) turn))))
 
-(defun play-game (seq number turn)
-  (if (= 2020 turn)
+(defun play-game (seq number turn last-turn)
+  (if (= last-turn turn)
     number
-    (match (lookup seq number)
-           (nil (play-game (with seq number turn) 0 (1+ turn)))
-           (last-turn (play-game (with seq number turn) (- turn last-turn) (1+ turn))))))
+    (play-game
+      (with seq number turn)
+      (match (lookup seq number) (nil 0) (last-seen (- turn last-seen)))
+      (1+ turn)
+      last-turn)))
 
 (defun main ()
   (let*
@@ -31,5 +33,6 @@
          #'parse-integer
          (split "," (first (read-input-as-list 15)))))
      (seq (initialize-seq (butlast starting-numbers))))
-    (print (play-game seq (first (last starting-numbers)) (length starting-numbers)))))
+    (dolist (last-turn '(2020 30000000))
+      (print (play-game seq (first (last starting-numbers)) (length starting-numbers) last-turn)))))
 
