@@ -7,11 +7,6 @@
 
 (defparameter *preamble-length* 25)
 
-(defun split-at (n lst &optional lst2)
-  (if (zerop n)
-    (values (reverse lst2) lst)
-    (split-at (1- n) (cdr lst) (cons (car lst) lst2))))
-
 (defun make-sums (preamble)
   (match preamble
          ((list _) nil)
