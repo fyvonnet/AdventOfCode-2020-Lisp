@@ -4,9 +4,11 @@
            :serial t
            :depends-on (:aoc-coord
                         :aoc-misc
+                        :alexandria
                         :fset
                         :cl-ppcre
                         :functional-queue
+                        :serapeum
                         :trivia)
            :components ((:file "day01")
                         (:file "day02")
@@ -22,4 +24,7 @@
                         (:file "day12")
                         (:file "day13")
                         (:file "day14")
-                        (:file "day15")))
+                        (:file "day15")
+                        (:file "day16")
+                        (:file "day17")
+                        (:file "day18")))
