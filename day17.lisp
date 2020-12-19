@@ -39,12 +39,6 @@
                    (#\# (with set (list x y 0)))
                    (#\. set)))))))
 
-(defun decode-input (c)
-  (case c
-    (#\# t)
-    (#\. nil)
-    (otherwise (error (format nil "unexpected character: ~a" c)))))
-
 (defun update-space (space new-min-coord new-dim-space)
   (let*
     ((new-max-coord (mapcar (lambda (d) (+ new-min-coord d)) new-dim-space))
