@@ -33,6 +33,7 @@
   (nlet rec ((rules (aref rules-arr rule-num)))
         (cond
           ((null rules) 'invalid)
+          ((null message) 'invalid)
           ((characterp rules) 
            (if (char= rules (car message))
              (cdr message)
@@ -46,11 +47,13 @@
 
 (defun main ()
   (let*
-    ((stream (open "inputs/day19"))
+    ;((stream (open "inputs/day19-test"))
+    ((stream (open "inputs/day19-test2"))
+    ;((stream (open "inputs/day19"))
      (rules-lst (read-rules stream))
      (rules
        (loop
-         with array = (make-array (length rules-lst))
+         with array = (make-array (1+ (reduce #'max (mapcar #'car rules-lst))))
          for r in rules-lst
          do (setf (aref array (car r)) (cdr r))
          finally (return array)))
@@ -59,4 +62,8 @@
          for str = (read-line stream nil)
          while str
          collect str)))
+    (setf (aref rules  8) '((42) (42 8)))
+    (setf (aref rules 11) '((42 31) (42 11 31)))
+    (print (aref rules 42))
+    (print (aref rules 31))
     (print (count-valid (lambda (m) (check rules m)) messages))))
