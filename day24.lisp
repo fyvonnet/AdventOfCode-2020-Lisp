@@ -7,20 +7,20 @@
 (in-package :day24)
 
 (defun find-turned-tile (movements)
-  (nlet rec ((x 0) (y 0) (lst (coerce movements 'list)))
+  (nlet rec ((x 0) (y 0) (z 0) (lst (coerce movements 'list)))
         (if (null lst)
-          (cons x y)
+          (list x y z)
           (case (car lst)
-            (#\w (rec (1- x) y (cdr lst)))
-            (#\e (rec (1+ x) y (cdr lst)))
-            (#\s
-             (case (cadr lst)
-               (#\w (rec (1- x) (1- y) (cddr lst)))
-               (#\e (rec     x  (1- y) (cddr lst)))))
+            (#\e (rec (1+ x) (1- y) z (cdr lst)))
+            (#\w (rec (1- x) (1+ y) z (cdr lst)))
             (#\n
              (case (cadr lst)
-               (#\w (rec     x  (1+ y) (cddr lst)))
-               (#\e (rec (1+ x) (1+ y) (cddr lst)))))))))
+               (#\e (rec (1+ x)    y  (1- z) (cddr lst)))
+               (#\w (rec     x (1+ y) (1- z) (cddr lst)))))
+            (#\s
+             (case (cadr lst)
+               (#\e (rec     x (1- y) (1+ z) (cddr lst)))
+               (#\w (rec (1- x)    y  (1+ z) (cddr lst)))))))))
 
 (defun main ()
   (let
